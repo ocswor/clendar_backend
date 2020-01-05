@@ -198,6 +198,7 @@ def user_info(request):
 # 获取开关配置
 @csrf_exempt
 def get_setting(request):
+    # logging.debug("test")
     settings_vaule = utils.get_constance_settings()
     return JsonResponse(dict(
         code=1,

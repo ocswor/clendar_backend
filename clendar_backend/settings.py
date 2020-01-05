@@ -161,3 +161,56 @@ import redis
 
 pool = redis.BlockingConnectionPool(host='localhost', port=6379, db=1, max_connections=1000, socket_timeout=60 * 60)
 REDIS_CLIENT = redis.StrictRedis(connection_pool=pool)
+
+import logging
+
+log_format = "[%(levelname)1.1s %(asctime)s] [%(filename)s:%(lineno)d] [%(funcName)s] %(message)s"
+logging.basicConfig(format=log_format, level=logging.DEBUG)
+
+# django constance config
+CONSTANCE_REDIS_CONNECTION = 'redis://localhost:6379/0'
+CONSTANCE_ADDITIONAL_FIELDS = {  # example fields
+    'yes_no_null_select': ['django.forms.fields.ChoiceField', {
+        'widget': 'django.forms.Select',
+        'choices': ((None, "-----"), ("yes", "Yes"), ("no", "No"))
+    }],
+    'image_field': ['django.forms.ImageField', {}],
+}
+
+CONSTANCE_CONFIG = {
+    'be_agent_need_phone': (True, '注册代理是否要求手机号', bool),
+    'be_agent_by_self': (True, '是否可以自助成为代理', bool),
+    'upgrade_role_2_member_count': (10, '升级经理团长，绑定下级买家数', int),
+    'upgrade_role_3_member_count': (100, '升级总监团长，有效直属经理团长数', int),
+    'upgrade_role_3_team_count': (300, '升级总监团长，有效团队团长数', int),
+    'upgrade_role_3_rebate_amount': (2000, '升级总监团长，当月直属经理团长贡献的佣金', int),
+    'withdrawal_service_charge_rate': (0, '提现手续费百分比', int),
+    'withdraw_date': ("23,24", '可提现日期'),
+    'goods_detail_banner_ad': (True, '开启详情页广告', bool),
+    'wx_withdraw': (True, '开启微信提现', bool),
+    'zfb_withdraw': (True, '开启支付宝提现', bool),
+    'official_pid': (21978290, '官方账号', int),
+    'min_withdrawal_amount': (10, '最低提现金额，单位元', int)
+}
+
+CONSTANCE_CONFIG_FIELDSETS = {
+    '代理升级': (
+        'be_agent_need_phone',
+        'be_agent_by_self',
+        'upgrade_role_2_member_count',
+        'upgrade_role_3_member_count',
+        'upgrade_role_3_team_count',
+        'upgrade_role_3_rebate_amount',
+    ),
+    '其它选项': (
+        'withdrawal_service_charge_rate',
+        'withdraw_date',
+        'goods_detail_banner_ad',
+        'wx_withdraw',
+        'zfb_withdraw',
+        'official_pid',
+        'min_withdrawal_amount',
+    ),
+}
+
+from .local_settings import *
