@@ -16,8 +16,46 @@ from constance import config
 import copy
 
 from django.conf import settings
+import lunardate
+from calendar import Calendar
+from common.JieQi.SolarTerms import getjieqi_info
 
 cache = settings.REDIS_CLIENT
+
+day_info_dic = {
+    1: "初一",
+    2: "初二",
+    3: "初三",
+    4: "初四",
+    5: "初五",
+    6: "初六",
+    7: "初七",
+    8: "初八",
+    9: "初九",
+    10: "初十",
+    11: "十一",
+    12: "十二",
+    13: "十三",
+    14: "十四",
+    15: "十五",
+    16: "十六",
+    17: "十七",
+    18: "十八",
+    19: "十九",
+    20: "二十",
+    21: "二十一",
+    22: "二十二",
+    23: "二十三",
+    24: "二十四",
+    26: "二十六",
+    25: "二十五",
+    27: "二十七",
+    28: "二十八",
+    29: "二十九",
+    30: "三十",
+    31: "三十一",
+    32: "三十二",
+}
 
 
 class JsonDict(dict):
@@ -141,3 +179,35 @@ def hincr_userinfo_cache_value(user_id, field, flag):
             cache.hincrby(name=key, key=field)
         else:
             cache.hincrby(name=key, key=field, amount=-1)
+
+
+ca = Calendar(firstweekday=6)
+
+
+def monthdatescalendar_info(year, month):
+    calendar_list = []
+    jieqi_data = getjieqi_info(year)
+    day_date_items = ca.monthdatescalendar(year, month)
+    for day_date_list in day_date_items:
+        for day_date in day_date_list:
+            yinlidate = lunardate.LunarDate.fromSolarDate(day_date.year, day_date.month, day_date.day)
+            if day_date.month == month:
+                disable = 0
+            else:
+                disable = 1
+            # print(day_date, yinlidate, day_info_dic[yinlidate.day], disable)
+            # yinlidate = "%d-%d-%d" % (yinlidate.year, yinlidate.month, yinlidate.day)
+            yinlidate = day_info_dic[yinlidate.day]
+            jieqi = jieqi_data.get(str(day_date), "")
+            if jieqi:
+                yinlidate = jieqi
+
+            data_info = {
+                "yangli": day_date.day,
+                "yinli": yinlidate,
+                "disable": disable,
+                "year": year,
+                "month": month
+            }
+            calendar_list.append(data_info)
+    return calendar_list
