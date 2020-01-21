@@ -189,6 +189,7 @@ def monthdatescalendar_info(year, month):
     jieqi_data = getjieqi_info(year)
     day_date_items = ca.monthdatescalendar(year, month)
     for day_date_list in day_date_items:
+        items = []
         for day_date in day_date_list:
             yinlidate = lunardate.LunarDate.fromSolarDate(day_date.year, day_date.month, day_date.day)
             if day_date.month == month:
@@ -209,5 +210,6 @@ def monthdatescalendar_info(year, month):
                 "year": year,
                 "month": month
             }
-            calendar_list.append(data_info)
+            items.append(data_info)
+        calendar_list.append(items)
     return calendar_list
